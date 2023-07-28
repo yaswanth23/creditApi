@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <!-- Use environment variable to specify log path -->
+        <Property name="log-path">${sys:LOG_PATH:-/Users/${sys:user.name}/logFiles/creditApiLogs}</Property>
+        <Property name="log-api-name">creditApi</Property>
+    </Properties>
+    <Appenders>
+        <RollingFile name="info-log" fileName="${log-path}/${log-api-name}-info.log"
+                     filePattern="${log-path}/%d{yyyy-MM-dd}/app-info-%d{yyyy-MM-dd-HH}-hour-%i-file.log">
+            <ThresholdFilter level="INFO" />
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] %c - %L[%M] : %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <SizeBasedTriggeringPolicy size="50 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="100" />
+        </RollingFile>
+        <RollingFile name="error-log" fileName="${log-path}/${log-api-name}-error.log"
+                     filePattern="${log-path}/%d{yyyy-MM-dd}/app-error-%d{yyyy-MM-dd}.log">
+            <ThresholdFilter level="WARN" />
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] %c - %L[%M] : %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.hibernate.tool.hbm2ddl.TableMetadata" additivity="false" level="INFO">
+            <appender-ref ref="info-log" />
+        </Logger>
+        <Logger name="org.springframework.web" level="info" additivity="false">
+            <AppenderRef ref="info-log" />
+        </Logger>
+        <Root level="INFO">
+            <appender-ref ref="info-log" />
+            <appender-ref ref="error-log" />
+        </Root>
+    </Loggers>
+</Configuration>
