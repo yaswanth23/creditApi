@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableAutoConfiguration
 public class CreditApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(CreditApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(CreditApiApplication.class, args);
+    }
 
 }
