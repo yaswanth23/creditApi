@@ -1,4 +1,6 @@
 # creditApi
+This documentation provides information about the CreditAPI, which allows you to manage credit card customer accounts and limit offers.
+
 API Endpoint: Create Account
 Description: Create an account for a credit card customer.
 
@@ -12,6 +14,7 @@ Request Body:
     "account_limit": 20000,
     "per_transaction_limit": 5000
 }
+<img width="1062" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/d6fa001c-6c9a-40c1-bb87-3d67cbcd6bf9">
 
 API Endpoint: Get Account Details
 Description: Retrieve account details for a specific account by its ID.
@@ -27,6 +30,7 @@ Response: The API will respond with the account details if found.
 
 Example:
 curl --location 'http://localhost:8080/api/v1/accounts/1003'
+
 
 API Endpoint: Create Limit Offer
 Description: Create a limit offer for an account.
@@ -78,3 +82,6 @@ Request Body:
 }
 
 Response: The API will respond with the updated limit offer details if successful.
+
+<img width="1440" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/b07323ec-12b0-413c-9ddf-97af9954aa69">
+
