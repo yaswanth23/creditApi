@@ -1,53 +1,55 @@
 package com.crdt.creditapi.entities;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
+@ToString
 @Entity
 @Table(name = "limit_offers")
 public class LimitOfferEntity {
     @Id
     @Column(name = "limit_offer_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long limit_offer_id;
+    private Long limitOfferId;
     @Column(name = "account_id")
-    private Long account_id;
+    private Long accountId;
     @Column(name = "limit_type")
-    private String limit_type;
+    private String limitType;
     @Column(name = "new_limit")
-    private int new_limit;
+    private int newLimit;
     @Column(name = "offer_activation_time")
-    private LocalDateTime offer_activation_time;
+    private LocalDateTime offerActivationTime;
     @Column(name = "offer_expiry_time")
-    private LocalDateTime offer_expiry_time;
+    private LocalDateTime offerExpiryTime;
     @Column(name = "status")
     private String status;
 
-    public void setLimit_offer_id(Long limit_offer_id) {
-        this.limit_offer_id = limit_offer_id;
+    public void setLimitOfferId(Long limitOfferId) {
+        this.limitOfferId = limitOfferId;
     }
 
-    public void setAccount_id(Long account_id) {
-        this.account_id = account_id;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
-    public void setLimit_type(String limit_type) {
-        this.limit_type = limit_type;
+    public void setLimitType(String limitType) {
+        this.limitType = limitType;
     }
 
-    public void setNew_limit(int new_limit) {
-        this.new_limit = new_limit;
+    public void setNewLimit(int newLimit) {
+        this.newLimit = newLimit;
     }
 
-    public void setOffer_activation_time(LocalDateTime offer_activation_time) {
-        this.offer_activation_time = offer_activation_time;
+    public void setOfferActivationTime(LocalDateTime offerActivationTime) {
+        this.offerActivationTime = offerActivationTime;
     }
 
-    public void setOffer_expiry_time(LocalDateTime offer_expiry_time) {
-        this.offer_expiry_time = offer_expiry_time;
+    public void setOfferExpiryTime(LocalDateTime offerExpiryTime) {
+        this.offerExpiryTime = offerExpiryTime;
     }
 
     public void setStatus(String status) {

@@ -5,6 +5,7 @@ import com.crdt.creditapi.constants.ErrorConstants;
 import com.crdt.creditapi.dto.AccountCreateResDto;
 import com.crdt.creditapi.dto.AccountDto;
 import com.crdt.creditapi.dto.CreditCreateResDto;
+import com.crdt.creditapi.dto.LimitOfferDto;
 import com.crdt.creditapi.entities.AccountsEntity;
 import com.crdt.creditapi.entities.LimitOfferEntity;
 import com.crdt.creditapi.repositories.AccountRepository;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ServiceCoreImpl implements ServiceCore {
@@ -94,7 +97,7 @@ public class ServiceCoreImpl implements ServiceCore {
 
             limitOfferRepository.saveAndFlush(insertLimitOffer);
 
-            Long limit_offer_id = insertLimitOffer.getLimit_offer_id();
+            Long limit_offer_id = insertLimitOffer.getLimitOfferId();
 
             response.setStatusCode(CommonConstants.STATUS_CODE_200);
             response.setStatusMessage(CommonConstants.ACCOUNT_CREATED_STATUS_CODE_MESSAGE);
@@ -107,13 +110,53 @@ public class ServiceCoreImpl implements ServiceCore {
         }
     }
 
+    @Override
+    public List<LimitOfferDto> getLimitOffers(Long account_id, LocalDateTime activeDate) throws WebServiceException {
+        try {
+            logger.info("Inside get limit offers: accountId={}, activeDate={}", account_id, activeDate);
+            List<LimitOfferDto> response = new ArrayList<>();
+            AccountsEntity accountsDetails = accountRepository.findByAccountId(account_id);
+
+            if (accountsDetails == null) {
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
+            }
+
+            List<LimitOfferEntity> limitOffers = null;
+
+            if (activeDate != null) {
+                limitOffers = limitOfferRepository.findByAccountIdAndStatusAndOfferActivationTimeBeforeAndOfferExpiryTimeAfter(
+                        account_id, "PENDING", activeDate, activeDate);
+            } else {
+                limitOffers = limitOfferRepository.findByAccountIdAndStatus(account_id, "PENDING");
+            }
+
+            for (LimitOfferEntity offerEntity : limitOffers) {
+                LimitOfferDto offerDto = new LimitOfferDto();
+                offerDto.setLimit_offer_id(offerEntity.getLimitOfferId());
+                offerDto.setAccount_id(offerEntity.getAccountId());
+                offerDto.setLimit_type(offerEntity.getLimitType());
+                offerDto.setNew_limit(offerEntity.getNewLimit());
+                offerDto.setOffer_activation_time(offerEntity.getOfferActivationTime());
+                offerDto.setOffer_expiry_time(offerEntity.getOfferExpiryTime());
+                offerDto.setStatus(offerEntity.getStatus());
+
+                response.add(offerDto);
+            }
+
+            return response;
+        } catch (WebServiceException e) {
+            logger.error(e);
+            throw e;
+        }
+    }
+
     private static LimitOfferEntity getLimitOfferEntity(CreditLimitOfferRequest creditLimitOfferRequest, AccountsEntity accountsDetails) {
         LimitOfferEntity insertLimitOffer = new LimitOfferEntity();
-        insertLimitOffer.setAccount_id(accountsDetails.getAccountId());
-        insertLimitOffer.setLimit_type(String.valueOf(creditLimitOfferRequest.getLimitType()));
-        insertLimitOffer.setNew_limit(creditLimitOfferRequest.getNewLimit());
-        insertLimitOffer.setOffer_activation_time(creditLimitOfferRequest.getOfferActivationTime());
-        insertLimitOffer.setOffer_expiry_time(creditLimitOfferRequest.getOfferExpiryTime());
+        insertLimitOffer.setAccountId(accountsDetails.getAccountId());
+        insertLimitOffer.setLimitType(String.valueOf(creditLimitOfferRequest.getLimitType()));
+        insertLimitOffer.setNewLimit(creditLimitOfferRequest.getNewLimit());
+        insertLimitOffer.setOfferActivationTime(creditLimitOfferRequest.getOfferActivationTime());
+        insertLimitOffer.setOfferExpiryTime(creditLimitOfferRequest.getOfferExpiryTime());
         insertLimitOffer.setStatus("PENDING");
         return insertLimitOffer;
     }
