@@ -12,7 +12,7 @@ public class AccountsEntity {
     @Id
     @Column(name = "account_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long account_id;
+    private Long accountId;
     @Column(name = "customer_id")
     private String customer_id;
     @Column(name = "account_limit")
@@ -28,8 +28,8 @@ public class AccountsEntity {
     @Column(name = "per_transaction_limit_update_time")
     private LocalDateTime per_transaction_limit_update_time;
 
-    public void setAccount_id(Long account_id) {
-        this.account_id = account_id;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
     public void setCustomer_id(String customer_id) {

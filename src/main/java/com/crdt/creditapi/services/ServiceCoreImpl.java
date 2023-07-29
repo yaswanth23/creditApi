@@ -1,5 +1,8 @@
 package com.crdt.creditapi.services;
 
+import com.crdt.creditapi.constants.CommonConstants;
+import com.crdt.creditapi.constants.ErrorConstants;
+import com.crdt.creditapi.dto.AccountCreateResDto;
 import com.crdt.creditapi.dto.AccountDto;
 import com.crdt.creditapi.dto.CreditLimitOfferDto;
 import com.crdt.creditapi.entities.AccountsEntity;
@@ -21,9 +24,9 @@ public class ServiceCoreImpl implements ServiceCore {
     AccountRepository accountRepository;
 
     @Override
-    public AccountDto createCustomerAccount(AccountRequest accountRequest) {
+    public AccountCreateResDto createCustomerAccount(AccountRequest accountRequest) {
         logger.info("Inside create customer account: {}", accountRequest);
-        AccountDto response = new AccountDto();
+        AccountCreateResDto response = new AccountCreateResDto();
 
         AccountsEntity createCustAccount = new AccountsEntity();
         createCustAccount.setCustomer_id(accountRequest.getCustomer_id());
@@ -34,11 +37,35 @@ public class ServiceCoreImpl implements ServiceCore {
 
         accountRepository.saveAndFlush(createCustAccount);
 
-        Long accountId = createCustAccount.getAccount_id();
+        Long accountId = createCustAccount.getAccountId();
 
-        response.setStatusCode("200");
-        response.setStatusMessage("success");
+        response.setStatusCode(CommonConstants.STATUS_CODE_200);
+        response.setStatusMessage(CommonConstants.ACCOUNT_CREATED_STATUS_CODE_MESSAGE);
         response.setAccount_id(accountId);
+        logger.info("create customer account response: {}", response.toString());
+        return response;
+    }
+
+    @Override
+    public AccountDto getAccountDetails(Long account_id) {
+        logger.info("Inside get account details: {}", account_id);
+        AccountDto response = new AccountDto();
+        AccountsEntity accountsDetails = accountRepository.findByAccountId(account_id);
+        if (accountsDetails != null) {
+            response.setStatusCode(CommonConstants.STATUS_CODE_200);
+            response.setStatusMessage(CommonConstants.STATUS_CODE_200_MESSAGE);
+            response.setAccount_id(accountsDetails.getAccountId());
+            response.setCustomer_id(accountsDetails.getCustomer_id());
+            response.setAccount_limit(accountsDetails.getAccount_limit());
+            response.setPer_transaction_limit(accountsDetails.getPer_transaction_limit());
+            response.setLast_account_limit(accountsDetails.getLast_account_limit());
+            response.setLast_per_transaction_limit(accountsDetails.getLast_per_transaction_limit());
+            response.setAccount_limit_update_time(accountsDetails.getAccount_limit_update_time());
+            response.setPer_transaction_limit_update_time(accountsDetails.getPer_transaction_limit_update_time());
+        } else {
+            response.setStatusCode(ErrorConstants.ERROR_STATUS_CODE_404);
+            response.setStatusMessage(ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
+        }
         return response;
     }
 
