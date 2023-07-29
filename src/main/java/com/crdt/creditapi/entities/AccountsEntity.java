@@ -14,7 +14,7 @@ public class AccountsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
     @Column(name = "customer_id")
-    private String customer_id;
+    private String customerId;
     @Column(name = "account_limit")
     private int account_limit;
     @Column(name = "per_transaction_limit")
@@ -32,8 +32,8 @@ public class AccountsEntity {
         this.accountId = accountId;
     }
 
-    public void setCustomer_id(String customer_id) {
-        this.customer_id = customer_id;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     public void setAccount_limit(int account_limit) {

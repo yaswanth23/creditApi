@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccountRepository extends JpaRepository<AccountsEntity, Long> {
     AccountsEntity findByAccountId(Long account_id);
+    AccountsEntity findByCustomerId(String customer_id);
 }

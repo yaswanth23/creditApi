@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public interface ServiceCore {
-    AccountCreateResDto createCustomerAccount(AccountRequest accountRequest);
+    AccountCreateResDto createCustomerAccount(AccountRequest accountRequest) throws WebServiceException;
 
     AccountDto getAccountDetails(Long account_id) throws WebServiceException;
 

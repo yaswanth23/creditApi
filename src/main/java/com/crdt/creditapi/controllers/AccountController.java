@@ -25,14 +25,10 @@ public class AccountController {
 
     @PostMapping(value = ApiServiceUrl.V1_API_URL + ApiServiceUrl.CREATE_CUSTOMER_ACCOUNTS_API_URL)
     public ResponseEntity<AccountCreateResDto> createCustomerAccount(@Valid @RequestBody AccountRequest accountRequest) throws WebServiceException {
-        try {
-            logger.info("input :: {}", accountRequest.toString());
-            AccountCreateResDto accountDtoResponse = null;
-            accountDtoResponse = serviceCore.createCustomerAccount(accountRequest);
-            return new ResponseEntity<>(accountDtoResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_500, ErrorConstants.ERROR_STATUS_CODE_500_MESSAGE);
-        }
+        logger.info("input :: {}", accountRequest.toString());
+        AccountCreateResDto accountDtoResponse = null;
+        accountDtoResponse = serviceCore.createCustomerAccount(accountRequest);
+        return new ResponseEntity<>(accountDtoResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = ApiServiceUrl.V1_API_URL + ApiServiceUrl.GET_ACCOUNT_DETAILS_API_URL)

@@ -30,12 +30,17 @@ public class ServiceCoreImpl implements ServiceCore {
     LimitOfferRepository limitOfferRepository;
 
     @Override
-    public AccountCreateResDto createCustomerAccount(AccountRequest accountRequest) {
+    public AccountCreateResDto createCustomerAccount(AccountRequest accountRequest) throws WebServiceException {
         logger.info("Inside create customer account: {}", accountRequest);
         AccountCreateResDto response = new AccountCreateResDto();
+        AccountsEntity accountsDetails = accountRepository.findByCustomerId(accountRequest.getCustomer_id());
+
+        if(accountsDetails != null){
+            throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_201, ErrorConstants.CUST_ID_EXISTS_ERROR_STATUS_CODE_201_MESSAGE);
+        }
 
         AccountsEntity createCustAccount = new AccountsEntity();
-        createCustAccount.setCustomer_id(accountRequest.getCustomer_id());
+        createCustAccount.setCustomerId(accountRequest.getCustomer_id());
         createCustAccount.setAccount_limit(accountRequest.getAccount_limit());
         createCustAccount.setPer_transaction_limit(accountRequest.getPer_transaction_limit());
         createCustAccount.setAccount_limit_update_time(LocalDateTime.now());
@@ -62,7 +67,7 @@ public class ServiceCoreImpl implements ServiceCore {
                 response.setStatusCode(CommonConstants.STATUS_CODE_200);
                 response.setStatusMessage(CommonConstants.STATUS_CODE_200_MESSAGE);
                 response.setAccount_id(accountsDetails.getAccountId());
-                response.setCustomer_id(accountsDetails.getCustomer_id());
+                response.setCustomer_id(accountsDetails.getCustomerId());
                 response.setAccount_limit(accountsDetails.getAccount_limit());
                 response.setPer_transaction_limit(accountsDetails.getPer_transaction_limit());
                 response.setLast_account_limit(accountsDetails.getLast_account_limit());
