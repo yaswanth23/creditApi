@@ -5,10 +5,10 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class CreditLimitOfferDto {
+public class AccountDto {
     private String statusCode;
     private String statusMessage;
-    private String accountId;
+    private Long account_id;
 
     public void setStatusCode(String statusCode) {
         this.statusCode = statusCode;
@@ -18,7 +18,7 @@ public class CreditLimitOfferDto {
         this.statusMessage = statusMessage;
     }
 
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
+    public void setAccount_id(Long account_id) {
+        this.account_id = account_id;
     }
 }
