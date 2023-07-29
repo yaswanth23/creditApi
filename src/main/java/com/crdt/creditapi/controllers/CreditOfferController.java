@@ -3,7 +3,9 @@ package com.crdt.creditapi.controllers;
 import com.crdt.creditapi.constants.ApiServiceUrl;
 import com.crdt.creditapi.dto.CreditCreateResDto;
 import com.crdt.creditapi.dto.LimitOfferDto;
+import com.crdt.creditapi.dto.UpdateCreditLimitResDto;
 import com.crdt.creditapi.requests.CreditLimitOfferRequest;
+import com.crdt.creditapi.requests.UpdateCreditLimitRequest;
 import com.crdt.creditapi.services.ServiceCore;
 import com.crdt.creditapi.utilities.WebServiceException;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +43,13 @@ public class CreditOfferController {
         logger.info("input getLimitOffers :: {}", account_id);
         List<LimitOfferDto> limitOfferResponse = serviceCore.getLimitOffers(account_id, activeDate);
         return new ResponseEntity<>(limitOfferResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping(value = ApiServiceUrl.V1_API_URL + ApiServiceUrl.UPDATE_LIMIT_OFFER_STATUS_API_URL)
+    public ResponseEntity<UpdateCreditLimitResDto> updateCreditLimit(@PathVariable(name = "limit_offer_id") Long limit_offer_id, @RequestBody @Valid UpdateCreditLimitRequest updateCreditLimitRequest) throws WebServiceException {
+        logger.info("input updateCreditLimit :: limit_offer_id: {}, updateCreditLimitRequest: {}", limit_offer_id, updateCreditLimitRequest);
+        UpdateCreditLimitResDto updateCreditLimitResponse = serviceCore.updateCreditLimit(limit_offer_id, updateCreditLimitRequest);
+        return new ResponseEntity<>(updateCreditLimitResponse, HttpStatus.OK);
     }
 
 }

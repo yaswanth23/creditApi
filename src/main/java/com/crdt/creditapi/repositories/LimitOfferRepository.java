@@ -1,5 +1,6 @@
 package com.crdt.creditapi.repositories;
 
+import com.crdt.creditapi.entities.AccountsEntity;
 import com.crdt.creditapi.entities.LimitOfferEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,4 +15,8 @@ public interface LimitOfferRepository extends JpaRepository<LimitOfferEntity, Lo
             Long account_id, String status, LocalDateTime offerActivationTime, LocalDateTime offerExpiryTime);
 
     List<LimitOfferEntity> findByAccountIdAndStatus(Long account_id, String status);
+
+    LimitOfferEntity findByLimitOfferId(Long limitOfferId);
+
+    LimitOfferEntity findByLimitOfferIdAndStatus(Long limitOfferId, String status);
 }

@@ -6,5 +6,8 @@ public class ApiServiceUrl {
     public static final String GET_ACCOUNT_DETAILS_API_URL = "/accounts/{account_id}";
     public static final String CREATE_LIMIT_OFFER_API_URL = "/createLimitOffer";
     public static final String GET_LIMIT_OFFER_API_URL = "/limit-offers/{account_id}";
-    private ApiServiceUrl() {}
+    public static final String UPDATE_LIMIT_OFFER_STATUS_API_URL = "/limit-offers/{limit_offer_id}";
+
+    private ApiServiceUrl() {
+    }
 }

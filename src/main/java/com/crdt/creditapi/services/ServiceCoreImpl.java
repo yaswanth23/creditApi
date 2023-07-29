@@ -2,16 +2,14 @@ package com.crdt.creditapi.services;
 
 import com.crdt.creditapi.constants.CommonConstants;
 import com.crdt.creditapi.constants.ErrorConstants;
-import com.crdt.creditapi.dto.AccountCreateResDto;
-import com.crdt.creditapi.dto.AccountDto;
-import com.crdt.creditapi.dto.CreditCreateResDto;
-import com.crdt.creditapi.dto.LimitOfferDto;
+import com.crdt.creditapi.dto.*;
 import com.crdt.creditapi.entities.AccountsEntity;
 import com.crdt.creditapi.entities.LimitOfferEntity;
 import com.crdt.creditapi.repositories.AccountRepository;
 import com.crdt.creditapi.repositories.LimitOfferRepository;
 import com.crdt.creditapi.requests.AccountRequest;
 import com.crdt.creditapi.requests.CreditLimitOfferRequest;
+import com.crdt.creditapi.requests.UpdateCreditLimitRequest;
 import com.crdt.creditapi.utilities.WebServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,7 +70,7 @@ public class ServiceCoreImpl implements ServiceCore {
                 response.setAccount_limit_update_time(accountsDetails.getAccount_limit_update_time());
                 response.setPer_transaction_limit_update_time(accountsDetails.getPer_transaction_limit_update_time());
             } else {
-                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ACCOUNT_ERROR_STATUS_CODE_404_MESSAGE);
             }
             logger.info("get account details response: {}", response.toString());
             return response;
@@ -90,7 +88,19 @@ public class ServiceCoreImpl implements ServiceCore {
             AccountsEntity accountsDetails = accountRepository.findByAccountId(creditLimitOfferRequest.getAccountId());
 
             if (accountsDetails == null) {
-                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ACCOUNT_ERROR_STATUS_CODE_404_MESSAGE);
+            }
+
+            if ("ACCOUNT_LIMIT".equals(String.valueOf(creditLimitOfferRequest.getLimitType()))) {
+                if(accountsDetails.getAccount_limit() > creditLimitOfferRequest.getNewLimit()){
+                    throw new WebServiceException(ErrorConstants.NEW_LIMIT_LESS_THAN_CURRENT_ERROR_STATUS_CODE_10001, ErrorConstants.NEW_LIMIT_LESS_THAN_CURRENT_ERROR_STATUS_CODE_10001_MESSAGE);
+                }
+            }
+
+            if ("PER_TRANSACTION_LIMIT".equals(String.valueOf(creditLimitOfferRequest.getLimitType()))) {
+                if(accountsDetails.getAccount_limit() > creditLimitOfferRequest.getNewLimit()){
+                    throw new WebServiceException(ErrorConstants.NEW_LIMIT_LESS_THAN_CURRENT_ERROR_STATUS_CODE_10001, ErrorConstants.NEW_LIMIT_LESS_THAN_CURRENT_ERROR_STATUS_CODE_10001_MESSAGE);
+                }
             }
 
             LimitOfferEntity insertLimitOffer = getLimitOfferEntity(creditLimitOfferRequest, accountsDetails);
@@ -118,7 +128,7 @@ public class ServiceCoreImpl implements ServiceCore {
             AccountsEntity accountsDetails = accountRepository.findByAccountId(account_id);
 
             if (accountsDetails == null) {
-                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ACCOUNT_ERROR_STATUS_CODE_404_MESSAGE);
             }
 
             List<LimitOfferEntity> limitOffers = null;
@@ -143,6 +153,52 @@ public class ServiceCoreImpl implements ServiceCore {
                 response.add(offerDto);
             }
             logger.info("get limit offer response: {}", response.toString());
+            return response;
+        } catch (WebServiceException e) {
+            logger.error(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public UpdateCreditLimitResDto updateCreditLimit(Long limitOfferId, UpdateCreditLimitRequest updateCreditLimitRequest) throws WebServiceException {
+        try {
+            logger.info("Inside update credit limit: limitOfferId={}, updateCreditLimitRequest={}", limitOfferId, updateCreditLimitRequest);
+            UpdateCreditLimitResDto response = new UpdateCreditLimitResDto();
+            LimitOfferEntity limitOfferDetails = limitOfferRepository.findByLimitOfferId(limitOfferId);
+
+            if (limitOfferDetails == null) {
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.LIMIT_ERROR_STATUS_CODE_404_MESSAGE);
+            }
+            String limitStatus = limitOfferDetails.getStatus();
+            limitOfferDetails = limitOfferRepository.findByLimitOfferIdAndStatus(limitOfferId, "PENDING");
+
+            if (limitOfferDetails == null) {
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.LIMIT_NOT_PENDING_ERROR_STATUS_CODE_404_MESSAGE + limitStatus);
+            }
+            limitOfferDetails.setStatus(String.valueOf(updateCreditLimitRequest.getStatus()));
+            limitOfferRepository.save(limitOfferDetails);
+
+            AccountsEntity accountDetails = accountRepository.findByAccountId(limitOfferDetails.getAccountId());
+
+            if (accountDetails == null) {
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ACCOUNT_ERROR_STATUS_CODE_404_MESSAGE);
+            }
+
+            if ("ACCEPTED".equals(String.valueOf(updateCreditLimitRequest.getStatus()))) {
+                if ("ACCOUNT_LIMIT".equals(limitOfferDetails.getLimitType())) {
+                    accountDetails.setLast_account_limit(accountDetails.getAccount_limit());
+                    accountDetails.setAccount_limit(limitOfferDetails.getNewLimit());
+                    accountDetails.setAccount_limit_update_time(LocalDateTime.now());
+                    accountRepository.save(accountDetails);
+                } else if ("PER_TRANSACTION_LIMIT".equals(limitOfferDetails.getLimitType())) {
+                    accountDetails.setLast_per_transaction_limit(accountDetails.getPer_transaction_limit());
+                    accountDetails.setPer_transaction_limit(limitOfferDetails.getNewLimit());
+                    accountDetails.setPer_transaction_limit_update_time(LocalDateTime.now());
+                    accountRepository.save(accountDetails);
+                }
+            }
+            response.setMessage("Offer status updated successfully.");
             return response;
         } catch (WebServiceException e) {
             logger.error(e);
