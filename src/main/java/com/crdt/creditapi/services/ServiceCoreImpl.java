@@ -90,13 +90,7 @@ public class ServiceCoreImpl implements ServiceCore {
                 throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
             }
 
-            LimitOfferEntity insertLimitOffer = new LimitOfferEntity();
-            insertLimitOffer.setAccount_id(accountsDetails.getAccountId());
-            insertLimitOffer.setLimit_type(String.valueOf(creditLimitOfferRequest.getLimitType()));
-            insertLimitOffer.setNew_limit(creditLimitOfferRequest.getNewLimit());
-            insertLimitOffer.setOffer_activation_time(creditLimitOfferRequest.getOfferActivationTime());
-            insertLimitOffer.setOffer_expiry_time(creditLimitOfferRequest.getOfferExpiryTime());
-            insertLimitOffer.setStatus("PENDING");
+            LimitOfferEntity insertLimitOffer = getLimitOfferEntity(creditLimitOfferRequest, accountsDetails);
 
             limitOfferRepository.saveAndFlush(insertLimitOffer);
 
@@ -111,5 +105,16 @@ public class ServiceCoreImpl implements ServiceCore {
             logger.error(e);
             throw e;
         }
+    }
+
+    private static LimitOfferEntity getLimitOfferEntity(CreditLimitOfferRequest creditLimitOfferRequest, AccountsEntity accountsDetails) {
+        LimitOfferEntity insertLimitOffer = new LimitOfferEntity();
+        insertLimitOffer.setAccount_id(accountsDetails.getAccountId());
+        insertLimitOffer.setLimit_type(String.valueOf(creditLimitOfferRequest.getLimitType()));
+        insertLimitOffer.setNew_limit(creditLimitOfferRequest.getNewLimit());
+        insertLimitOffer.setOffer_activation_time(creditLimitOfferRequest.getOfferActivationTime());
+        insertLimitOffer.setOffer_expiry_time(creditLimitOfferRequest.getOfferExpiryTime());
+        insertLimitOffer.setStatus("PENDING");
+        return insertLimitOffer;
     }
 }
