@@ -3,15 +3,14 @@ package com.crdt.creditapi.requests;
 import lombok.Getter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
 @ToString
 public class CreditLimitOfferRequest {
-    @NotEmpty(message = "Account Id cannot be null or empty")
-    private String accountId;
+    @NotNull(message = "Account Id cannot be null")
+    private Long accountId;
 
     @NotNull(message = "limitType cannot be null")
     private LimitType limitType;
@@ -25,7 +24,7 @@ public class CreditLimitOfferRequest {
     @NotNull(message = "offerExpiryTime cannot be null")
     private LocalDateTime offerExpiryTime;
 
-    public void setAccountId(String accountId) {
+    public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
 

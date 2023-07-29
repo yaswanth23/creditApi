@@ -4,11 +4,14 @@ import com.crdt.creditapi.constants.CommonConstants;
 import com.crdt.creditapi.constants.ErrorConstants;
 import com.crdt.creditapi.dto.AccountCreateResDto;
 import com.crdt.creditapi.dto.AccountDto;
-import com.crdt.creditapi.dto.CreditLimitOfferDto;
+import com.crdt.creditapi.dto.CreditCreateResDto;
 import com.crdt.creditapi.entities.AccountsEntity;
+import com.crdt.creditapi.entities.LimitOfferEntity;
 import com.crdt.creditapi.repositories.AccountRepository;
+import com.crdt.creditapi.repositories.LimitOfferRepository;
 import com.crdt.creditapi.requests.AccountRequest;
 import com.crdt.creditapi.requests.CreditLimitOfferRequest;
+import com.crdt.creditapi.utilities.WebServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ public class ServiceCoreImpl implements ServiceCore {
 
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    LimitOfferRepository limitOfferRepository;
 
     @Override
     public AccountCreateResDto createCustomerAccount(AccountRequest accountRequest) {
@@ -47,34 +52,64 @@ public class ServiceCoreImpl implements ServiceCore {
     }
 
     @Override
-    public AccountDto getAccountDetails(Long account_id) {
-        logger.info("Inside get account details: {}", account_id);
-        AccountDto response = new AccountDto();
-        AccountsEntity accountsDetails = accountRepository.findByAccountId(account_id);
-        if (accountsDetails != null) {
-            response.setStatusCode(CommonConstants.STATUS_CODE_200);
-            response.setStatusMessage(CommonConstants.STATUS_CODE_200_MESSAGE);
-            response.setAccount_id(accountsDetails.getAccountId());
-            response.setCustomer_id(accountsDetails.getCustomer_id());
-            response.setAccount_limit(accountsDetails.getAccount_limit());
-            response.setPer_transaction_limit(accountsDetails.getPer_transaction_limit());
-            response.setLast_account_limit(accountsDetails.getLast_account_limit());
-            response.setLast_per_transaction_limit(accountsDetails.getLast_per_transaction_limit());
-            response.setAccount_limit_update_time(accountsDetails.getAccount_limit_update_time());
-            response.setPer_transaction_limit_update_time(accountsDetails.getPer_transaction_limit_update_time());
-        } else {
-            response.setStatusCode(ErrorConstants.ERROR_STATUS_CODE_404);
-            response.setStatusMessage(ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
+    public AccountDto getAccountDetails(Long account_id) throws WebServiceException {
+        try {
+            logger.info("Inside get account details: {}", account_id);
+            AccountDto response = new AccountDto();
+            AccountsEntity accountsDetails = accountRepository.findByAccountId(account_id);
+            if (accountsDetails != null) {
+                response.setStatusCode(CommonConstants.STATUS_CODE_200);
+                response.setStatusMessage(CommonConstants.STATUS_CODE_200_MESSAGE);
+                response.setAccount_id(accountsDetails.getAccountId());
+                response.setCustomer_id(accountsDetails.getCustomer_id());
+                response.setAccount_limit(accountsDetails.getAccount_limit());
+                response.setPer_transaction_limit(accountsDetails.getPer_transaction_limit());
+                response.setLast_account_limit(accountsDetails.getLast_account_limit());
+                response.setLast_per_transaction_limit(accountsDetails.getLast_per_transaction_limit());
+                response.setAccount_limit_update_time(accountsDetails.getAccount_limit_update_time());
+                response.setPer_transaction_limit_update_time(accountsDetails.getPer_transaction_limit_update_time());
+            } else {
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
+            }
+            logger.info("get account details response: {}", response.toString());
+            return response;
+        } catch (WebServiceException e) {
+            logger.error(e);
+            throw e;
         }
-        return response;
     }
 
     @Override
-    public CreditLimitOfferDto createLimitOffer(CreditLimitOfferRequest creditLimitOfferRequest) {
-        logger.info("Inside create limit offer: {}", creditLimitOfferRequest);
-        CreditLimitOfferDto response = new CreditLimitOfferDto();
-        response.setStatusCode("200");
-        response.setStatusMessage("success");
-        return response;
+    public CreditCreateResDto createLimitOffer(CreditLimitOfferRequest creditLimitOfferRequest) throws WebServiceException {
+        try {
+            logger.info("Inside create limit offer: {}", creditLimitOfferRequest);
+            CreditCreateResDto response = new CreditCreateResDto();
+            AccountsEntity accountsDetails = accountRepository.findByAccountId(creditLimitOfferRequest.getAccountId());
+
+            if (accountsDetails == null) {
+                throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_404, ErrorConstants.ERROR_STATUS_CODE_404_MESSAGE);
+            }
+
+            LimitOfferEntity insertLimitOffer = new LimitOfferEntity();
+            insertLimitOffer.setAccount_id(accountsDetails.getAccountId());
+            insertLimitOffer.setLimit_type(String.valueOf(creditLimitOfferRequest.getLimitType()));
+            insertLimitOffer.setNew_limit(creditLimitOfferRequest.getNewLimit());
+            insertLimitOffer.setOffer_activation_time(creditLimitOfferRequest.getOfferActivationTime());
+            insertLimitOffer.setOffer_expiry_time(creditLimitOfferRequest.getOfferExpiryTime());
+            insertLimitOffer.setStatus("PENDING");
+
+            limitOfferRepository.saveAndFlush(insertLimitOffer);
+
+            Long limit_offer_id = insertLimitOffer.getLimit_offer_id();
+
+            response.setStatusCode(CommonConstants.STATUS_CODE_200);
+            response.setStatusMessage(CommonConstants.ACCOUNT_CREATED_STATUS_CODE_MESSAGE);
+            response.setLimit_offer_id(limit_offer_id);
+            logger.info("create limit offer response: {}", response.toString());
+            return response;
+        } catch (WebServiceException e) {
+            logger.error(e);
+            throw e;
+        }
     }
 }

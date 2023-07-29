@@ -37,13 +37,8 @@ public class AccountController {
 
     @GetMapping(value = ApiServiceUrl.V1_API_URL + ApiServiceUrl.GET_ACCOUNT_DETAILS_API_URL)
     public ResponseEntity<AccountDto> getAccountDetails(@PathVariable Long account_id) throws WebServiceException {
-        try {
-            logger.info("Fetching account details for account_id: {}", account_id);
-            AccountDto accountDtoResponse = serviceCore.getAccountDetails(account_id);
-            return new ResponseEntity<>(accountDtoResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error(e);
-            throw new WebServiceException(ErrorConstants.ERROR_STATUS_CODE_500, ErrorConstants.ERROR_STATUS_CODE_500_MESSAGE);
-        }
+        logger.info("Fetching account details for account_id: {}", account_id);
+        AccountDto accountDtoResponse = serviceCore.getAccountDetails(account_id);
+        return new ResponseEntity<>(accountDtoResponse, HttpStatus.OK);
     }
 }
