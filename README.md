@@ -14,6 +14,7 @@ Request Body:
     "account_limit": 20000,
     "per_transaction_limit": 5000
 }
+
 <img width="1062" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/d6fa001c-6c9a-40c1-bb87-3d67cbcd6bf9">
 
 API Endpoint: Get Account Details
@@ -31,6 +32,7 @@ Response: The API will respond with the account details if found.
 Example:
 curl --location 'http://localhost:8080/api/v1/accounts/1003'
 
+<img width="1062" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/20387494-e373-4fc4-ae3d-bc1a65c900f6">
 
 API Endpoint: Create Limit Offer
 Description: Create a limit offer for an account.
@@ -47,6 +49,8 @@ Request Body:
     "offerActivationTime": "2023-08-01T12:00:00Z",
     "offerExpiryTime": "2023-08-05T12:00:00Z"
 }
+
+<img width="1062" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/a5811464-b276-4c79-962a-798c5707945b">
 
 API Endpoint: Get Active Limit Offers
 Description: Retrieve active limit offers for a specific account by its ID and a specific active date.
@@ -66,6 +70,8 @@ Response: The API will respond with the active limit offers for the specified ac
 Example:
 curl --location 'http://localhost:8080/api/v1/limit-offers/1003?activeDate=2023-08-04T12%3A00%3A00Z'
 
+<img width="1062" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/04a58439-1ab9-44cf-9a90-388d4eebc0cf">
+
 API Endpoint: Update Limit Offer Status
 Description: Update the status of a specific limit offer.
 
@@ -83,5 +89,13 @@ Request Body:
 
 Response: The API will respond with the updated limit offer details if successful.
 
+<img width="1062" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/18c2d910-81d3-4f7d-9e78-1d0d5c855881">
+
+Databse Tables
+TableName: accounts
+
 <img width="1440" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/b07323ec-12b0-413c-9ddf-97af9954aa69">
 
+TableName: limit_offers
+
+<img width="1440" alt="image" src="https://github.com/yaswanth23/creditApi/assets/33757232/106a7fde-a69b-40a7-bfa9-6d14c15a84ab">
