@@ -98,7 +98,7 @@ public class ServiceCoreImpl implements ServiceCore {
             }
 
             if ("PER_TRANSACTION_LIMIT".equals(String.valueOf(creditLimitOfferRequest.getLimitType()))) {
-                if(accountsDetails.getAccount_limit() > creditLimitOfferRequest.getNewLimit()){
+                if(accountsDetails.getPer_transaction_limit() > creditLimitOfferRequest.getNewLimit()){
                     throw new WebServiceException(ErrorConstants.NEW_LIMIT_LESS_THAN_CURRENT_ERROR_STATUS_CODE_10001, ErrorConstants.NEW_LIMIT_LESS_THAN_CURRENT_ERROR_STATUS_CODE_10001_MESSAGE);
                 }
             }
