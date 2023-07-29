@@ -142,7 +142,7 @@ public class ServiceCoreImpl implements ServiceCore {
 
                 response.add(offerDto);
             }
-
+            logger.info("get limit offer response: {}", response.toString());
             return response;
         } catch (WebServiceException e) {
             logger.error(e);
