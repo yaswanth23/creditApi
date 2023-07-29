@@ -15,7 +15,7 @@
     "per_transaction_limit": 5000
 }
 
-## API Endpoint: Get Account Details
+API Endpoint: Get Account Details
 Description: Retrieve account details for a specific account by its ID.
 
 URL: http://localhost:8080/api/v1/accounts/{account_id}
